@@ -1,0 +1,63 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html {
+    @apply scroll-smooth;
+  }
+  body {
+    @apply bg-canvas text-ink font-sans antialiased;
+  }
+  ::selection {
+    @apply bg-accentMuted text-ink;
+  }
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-border rounded-full;
+  }
+}
+
+@layer components {
+  /* Primary button — the ONLY place accent color appears as a fill */
+  .btn-primary {
+    @apply bg-accent hover:bg-accentHover text-white font-medium text-body
+           px-6 py-3 rounded-xl transition-colors duration-250
+           disabled:opacity-40 disabled:cursor-not-allowed;
+  }
+
+  .btn-secondary {
+    @apply bg-surface hover:bg-surfaceRaised text-ink font-medium text-body
+           px-6 py-3 rounded-xl border border-border transition-colors duration-250;
+  }
+
+  .btn-ghost {
+    @apply text-inkMuted hover:text-ink font-medium text-body
+           transition-colors duration-250;
+  }
+
+  .card-panel {
+    @apply bg-surface border border-border rounded-2xl;
+  }
+
+  .input-field {
+    @apply bg-surface border border-border rounded-xl px-4 py-3
+           text-ink text-body placeholder:text-inkFaint
+           focus:outline-none focus:border-accent transition-colors duration-250 w-full;
+  }
+
+  .label-micro {
+    @apply text-micro uppercase text-inkFaint;
+  }
+}
