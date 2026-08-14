@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
-import { CARDS } from "@/data/cards";
+import { getCards } from "@/lib/cards";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -16,7 +16,8 @@ export async function POST(req: Request) {
   }
 
   const { cardIds, goal, spending } = await req.json();
-  const stack = CARDS.filter((c) => cardIds.includes(c.id));
+  const allCards = await getCards(supabase);
+  const stack = allCards.filter((c) => cardIds.includes(c.id));
 
   const prompt = `Canadian credit card expert. Analyze this stack.
 CARDS: ${stack.map((c) => `${c.name} (${c.bank}): rewards=${JSON.stringify(c.rewards)}, fee=$${c.annualFee}`).join(" | ")}

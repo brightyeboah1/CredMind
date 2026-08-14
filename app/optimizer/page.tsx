@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import { CARDS } from "@/data/cards";
+import { useEffect, useState } from "react";
+import { CreditCard } from "@/data/cards";
+import { getCards } from "@/lib/cards";
 import { createClient } from "@/lib/supabase/client";
 import CardImage from "@/components/CardImage";
 import GatedPreview from "@/components/GatedPreview";
@@ -25,6 +26,8 @@ const GOALS = [
 ];
 
 function OptimizerContent() {
+  const [cards, setCards] = useState<CreditCard[]>([]);
+  const [cardsLoading, setCardsLoading] = useState(true);
   const [selected, setSelected] = useState<string[]>([]);
   const [goal, setGoal] = useState("travel");
   const [spending, setSpending] = useState({
@@ -38,6 +41,13 @@ function OptimizerContent() {
   const [result, setResult] = useState<Result | null>(null);
   const [loading, setLoading] = useState(false);
   const supabase = createClient();
+
+  useEffect(() => {
+    getCards().then((data) => {
+      setCards(data);
+      setCardsLoading(false);
+    });
+  }, []);
 
   const toggle = (id: string) =>
     setSelected((p) => (p.includes(id) ? p.filter((x) => x !== id) : [...p, id]));
@@ -89,8 +99,9 @@ function OptimizerContent() {
 
       <div className="card-panel p-6 mb-6">
         <p className="label-micro text-inkFaint mb-4">Select your current cards (up to 5)</p>
+        {cardsLoading && <p className="text-small text-inkMuted mb-2">Loading cards…</p>}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-          {CARDS.map((c) => (
+          {cards.map((c) => (
             <button
               key={c.id}
               onClick={() => toggle(c.id)}

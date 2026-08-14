@@ -1,23 +1,41 @@
 "use client";
 
-import { Suspense, useMemo, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { CARDS } from "@/data/cards";
+import { CreditCard } from "@/data/cards";
+import { getCards } from "@/lib/cards";
 import CardImage from "@/components/CardImage";
 import { IconClose } from "@/components/icons";
 
 function CompareTable() {
   const searchParams = useSearchParams();
-  const initialIds = useMemo(() => {
-    const fromQuery = searchParams.get("ids")?.split(",").filter(Boolean) || [];
-    if (fromQuery.length > 0) return fromQuery;
-    return CARDS.filter((c) => c.featured).slice(0, 2).map((c) => c.id);
-  }, []);
-
-  const [ids, setIds] = useState<string[]>(initialIds);
+  const [allCards, setAllCards] = useState<CreditCard[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [ids, setIds] = useState<string[]>([]);
+  const [initialized, setInitialized] = useState(false);
   const [search, setSearch] = useState("");
 
-  const cards = ids.map((id) => CARDS.find((c) => c.id === id)).filter(Boolean) as typeof CARDS;
+  useEffect(() => {
+    getCards().then((data) => {
+      setAllCards(data);
+      setLoading(false);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (initialized || allCards.length === 0) return;
+    const fromQuery = searchParams.get("ids")?.split(",").filter(Boolean) || [];
+    if (fromQuery.length > 0) {
+      setIds(fromQuery);
+    } else {
+      setIds(allCards.filter((c) => c.featured).slice(0, 2).map((c) => c.id));
+    }
+    setInitialized(true);
+  }, [allCards, initialized, searchParams]);
+
+  const cards = ids
+    .map((id) => allCards.find((c) => c.id === id))
+    .filter(Boolean) as CreditCard[];
 
   const addCard = (id: string) => {
     if (ids.includes(id) || ids.length >= 4) return;
@@ -28,15 +46,17 @@ function CompareTable() {
   const removeCard = (id: string) => setIds((p) => p.filter((x) => x !== id));
 
   const searchResults = search
-    ? CARDS.filter(
-        (c) =>
-          !ids.includes(c.id) &&
-          (c.name.toLowerCase().includes(search.toLowerCase()) ||
-            c.bank.toLowerCase().includes(search.toLowerCase()))
-      ).slice(0, 5)
+    ? allCards
+        .filter(
+          (c) =>
+            !ids.includes(c.id) &&
+            (c.name.toLowerCase().includes(search.toLowerCase()) ||
+              c.bank.toLowerCase().includes(search.toLowerCase()))
+        )
+        .slice(0, 5)
     : [];
 
-  const rows: [string, (c: (typeof CARDS)[0]) => string][] = [
+  const rows: [string, (c: CreditCard) => string][] = [
     ["Annual fee", (c) => (c.annualFee === 0 ? "None" : `$${c.annualFee}/yr`)],
     ["Network", (c) => c.network],
     ["Interest rate", (c) => (c.interestRate === 0 ? "Charge card" : `${c.interestRate}%`)],
@@ -56,8 +76,14 @@ function CompareTable() {
         <input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder={ids.length >= 4 ? "Remove a card to add another" : "Add a card to compare"}
-          disabled={ids.length >= 4}
+          placeholder={
+            loading
+              ? "Loading cards…"
+              : ids.length >= 4
+              ? "Remove a card to add another"
+              : "Add a card to compare"
+          }
+          disabled={loading || ids.length >= 4}
           className="input-field"
         />
         {searchResults.length > 0 && (
@@ -82,7 +108,7 @@ function CompareTable() {
       {cards.length === 0 ? (
         <div className="max-w-xl mx-auto text-center py-16">
           <p className="text-body text-inkMuted">
-            Search above to add cards and start comparing.
+            {loading ? "Loading cards…" : "Search above to add cards and start comparing."}
           </p>
         </div>
       ) : (

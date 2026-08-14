@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { getStack, getWatchlist } from "@/lib/userCards";
-import { CARDS } from "@/data/cards";
+import { CreditCard } from "@/data/cards";
+import { getCards } from "@/lib/cards";
 import { ACCOUNTS } from "@/data/accounts";
 import AccountTile from "@/components/AccountTile";
 import PromoBanner from "@/components/PromoBanner";
@@ -51,9 +52,11 @@ export default function HomePage() {
   const [stack, setStack] = useState<string[]>([]);
   const [watchlist, setWatchlist] = useState<string[]>([]);
   const [score, setScore] = useState<CachedScore | null>(null);
+  const [cards, setCards] = useState<CreditCard[]>([]);
   const supabase = createClient();
 
   useEffect(() => {
+    getCards().then(setCards);
     supabase.auth.getUser().then(async ({ data }) => {
       setUser(data.user);
       setLoading(false);
@@ -71,8 +74,8 @@ export default function HomePage() {
     });
   }, []);
 
-  const stackCards = CARDS.filter((c) => stack.includes(c.id));
-  const watchCards = CARDS.filter((c) => watchlist.includes(c.id));
+  const stackCards = cards.filter((c) => stack.includes(c.id));
+  const watchCards = cards.filter((c) => watchlist.includes(c.id));
   const totalAnnualFee = stackCards.reduce((s, c) => s + c.annualFee, 0);
 
   if (loading) return null;

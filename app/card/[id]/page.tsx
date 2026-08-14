@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { CARDS } from "@/data/cards";
+import { CreditCard } from "@/data/cards";
+import { getCardBySlug } from "@/lib/cards";
 import { createClient } from "@/lib/supabase/client";
 import { addToStack, removeFromStack, getStack, getWatchlist, toggleWatchlist } from "@/lib/userCards";
 import CardImage from "@/components/CardImage";
@@ -33,7 +34,7 @@ function estimateAnnualValue(rewards: Record<string, number>) {
 }
 
 export default function CardDetailPage({ params }: { params: { id: string } }) {
-  const card = CARDS.find((c) => c.id === params.id);
+  const [card, setCard] = useState<CreditCard | null | undefined>(undefined);
   const router = useRouter();
   const supabase = createClient();
 
@@ -42,6 +43,10 @@ export default function CardDetailPage({ params }: { params: { id: string } }) {
   const [watched, setWatched] = useState(false);
   const [showMore, setShowMore] = useState(false);
   const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    getCardBySlug(params.id).then(setCard);
+  }, [params.id]);
 
   useEffect(() => {
     if (!card) return;
@@ -56,7 +61,11 @@ export default function CardDetailPage({ params }: { params: { id: string } }) {
         setWatched(watchlist.includes(card.id));
       }
     });
-  }, []);
+  }, [card]);
+
+  if (card === undefined) {
+    return <div className="max-w-2xl mx-auto px-6 py-24 text-center text-body text-inkMuted">Loading…</div>;
+  }
 
   if (!card) {
     return (

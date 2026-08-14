@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
-import { CARDS } from "@/data/cards";
+import { getCards } from "@/lib/cards";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -20,7 +20,8 @@ export async function POST(req: Request) {
 
   const { answers } = await req.json();
 
-  const cardList = CARDS.map(
+  const allCards = await getCards(supabase);
+  const cardList = allCards.map(
     (c) =>
       `${c.name} (${c.bank}): fee $${c.annualFee}, type ${c.type}, creditScore ${c.creditScore}, balanceTransfer ${c.balanceTransfer}`
   ).join("\n");

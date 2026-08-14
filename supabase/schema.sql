@@ -149,6 +149,25 @@ create policy "Users manage own watchlist" on watchlist
   for all using (auth.uid() = user_id);
 
 -- ═══════════════════════════════════════════════════════════════════════
+-- CREDIT_CARDS PRODUCT-PAGE FIELDS + SLUG
+-- `slug` is what the app actually keys off (URLs, image filenames at
+-- /public/cards/{slug}.png, user_cards.card_id, watchlist.card_id) —
+-- the uuid `id` stays the real primary key, slug is just a stable
+-- human-readable lookup. Run this block if you already ran schema.sql
+-- once before.
+-- ═══════════════════════════════════════════════════════════════════════
+
+alter table credit_cards add column if not exists slug text unique;
+alter table credit_cards add column if not exists image_url text;
+alter table credit_cards add column if not exists pros jsonb;
+alter table credit_cards add column if not exists cons jsonb;
+alter table credit_cards add column if not exists full_description text;
+alter table credit_cards add column if not exists eligibility jsonb;
+alter table credit_cards add column if not exists fees jsonb;
+alter table credit_cards add column if not exists foreign_transaction_fee numeric;
+alter table credit_cards add column if not exists instant_approval boolean default false;
+
+-- ═══════════════════════════════════════════════════════════════════════
 -- ROW LEVEL SECURITY — do not skip this section
 -- ═══════════════════════════════════════════════════════════════════════
 

@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { CARDS, BANKS } from "@/data/cards";
+import { CreditCard } from "@/data/cards";
+import { getCards } from "@/lib/cards";
 import { FILTERS } from "@/data/filters";
 import { ACCOUNTS } from "@/data/accounts";
 import CardChip from "@/components/CardChip";
@@ -10,17 +11,28 @@ import AccountTile from "@/components/AccountTile";
 
 export default function ExplorePage() {
   const router = useRouter();
+  const [cards, setCards] = useState<CreditCard[]>([]);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [bank, setBank] = useState("All");
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
   const [compareIds, setCompareIds] = useState<string[]>([]);
+
+  useEffect(() => {
+    getCards().then((data) => {
+      setCards(data);
+      setLoading(false);
+    });
+  }, []);
+
+  const banks = useMemo(() => [...new Set(cards.map((c) => c.bank))].sort(), [cards]);
 
   const toggleFilter = (id: string) =>
     setActiveFilters((prev) =>
       prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
     );
 
-  const filtered = CARDS.filter((c) => {
+  const filtered = cards.filter((c) => {
     if (bank !== "All" && c.bank !== bank) return false;
     if (
       search &&
@@ -72,12 +84,12 @@ export default function ExplorePage() {
           className="input-field max-w-[180px] cursor-pointer"
         >
           <option>All</option>
-          {BANKS.map((b) => (
+          {banks.map((b) => (
             <option key={b}>{b}</option>
           ))}
         </select>
         <div className="ml-auto text-small text-inkFaint">
-          {filtered.length} cards
+          {loading ? "Loading…" : `${filtered.length} cards`}
         </div>
       </div>
 
@@ -122,17 +134,21 @@ export default function ExplorePage() {
       )}
 
       {/* Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-20">
-        {filtered.map((card) => (
-          <CardChip
-            key={card.id}
-            card={card}
-            onClick={() => router.push(`/card/${card.id}`)}
-            selected={compareIds.includes(card.id)}
-            onToggleCompare={() => toggleCompare(card.id)}
-          />
-        ))}
-      </div>
+      {loading ? (
+        <div className="text-body text-inkMuted mb-20">Loading cards…</div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-20">
+          {filtered.map((card) => (
+            <CardChip
+              key={card.id}
+              card={card}
+              onClick={() => router.push(`/card/${card.id}`)}
+              selected={compareIds.includes(card.id)}
+              onToggleCompare={() => toggleCompare(card.id)}
+            />
+          ))}
+        </div>
+      )}
 
       {/* Other products — not part of the card catalogue */}
       <div>
