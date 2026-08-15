@@ -6,6 +6,9 @@ import { CreditCard } from "@/data/cards";
 import { getCards } from "@/lib/cards";
 import { FILTERS } from "@/data/filters";
 import CardChip from "@/components/CardChip";
+import { IconArrowRight } from "@/components/icons";
+
+const PAGE_SIZE = 15;
 
 function BrowseCatalog() {
   const router = useRouter();
@@ -17,6 +20,7 @@ function BrowseCatalog() {
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
   const [compareIds, setCompareIds] = useState<string[]>([]);
   const [initialized, setInitialized] = useState(false);
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     getCards().then((data) => {
@@ -38,10 +42,12 @@ function BrowseCatalog() {
 
   const banks = useMemo(() => [...new Set(cards.map((c) => c.bank))].sort(), [cards]);
 
-  const toggleFilter = (id: string) =>
+  const toggleFilter = (id: string) => {
     setActiveFilters((prev) =>
       prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
     );
+    setPage(1);
+  };
 
   const filtered = cards.filter((c) => {
     if (bank !== "All" && c.bank !== bank) return false;
@@ -57,6 +63,15 @@ function BrowseCatalog() {
     }
     return true;
   });
+
+  const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const clampedPage = Math.min(page, pageCount);
+  const paged = filtered.slice((clampedPage - 1) * PAGE_SIZE, clampedPage * PAGE_SIZE);
+
+  const goToPage = (p: number) => {
+    setPage(p);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   const toggleCompare = (id: string) => {
     setCompareIds((prev) => {
@@ -79,13 +94,19 @@ function BrowseCatalog() {
       <div className="flex flex-wrap items-center gap-3 mb-4">
         <input
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setPage(1);
+          }}
           placeholder="Search cards or banks"
           className="input-field max-w-xs"
         />
         <select
           value={bank}
-          onChange={(e) => setBank(e.target.value)}
+          onChange={(e) => {
+            setBank(e.target.value);
+            setPage(1);
+          }}
           className="input-field max-w-[180px] cursor-pointer"
         >
           <option>All</option>
@@ -141,17 +162,69 @@ function BrowseCatalog() {
           No cards match those filters — try clearing one.
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-20">
-          {filtered.map((card) => (
-            <CardChip
-              key={card.id}
-              card={card}
-              onClick={() => router.push(`/card/${card.id}`)}
-              selected={compareIds.includes(card.id)}
-              onToggleCompare={() => toggleCompare(card.id)}
-            />
-          ))}
-        </div>
+        <>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+            {paged.map((card) => (
+              <CardChip
+                key={card.id}
+                card={card}
+                onClick={() => router.push(`/card/${card.id}`)}
+                selected={compareIds.includes(card.id)}
+                onToggleCompare={() => toggleCompare(card.id)}
+              />
+            ))}
+          </div>
+
+          {pageCount > 1 && (
+            <div className="flex items-center justify-between mb-20">
+              <span className="text-small text-inkFaint">
+                Showing {(clampedPage - 1) * PAGE_SIZE + 1}–
+                {Math.min(clampedPage * PAGE_SIZE, filtered.length)} of {filtered.length}
+              </span>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => goToPage(clampedPage - 1)}
+                  disabled={clampedPage === 1}
+                  className="text-small font-medium px-3 py-1.5 rounded-lg text-inkMuted bg-surfaceRaised hover:text-ink disabled:opacity-30 disabled:cursor-not-allowed transition-colors duration-250"
+                >
+                  Previous
+                </button>
+                {Array.from({ length: pageCount }, (_, i) => i + 1)
+                  .filter(
+                    (p) =>
+                      p === 1 ||
+                      p === pageCount ||
+                      Math.abs(p - clampedPage) <= 1
+                  )
+                  .map((p, i, arr) => (
+                    <span key={p} className="flex items-center gap-2">
+                      {i > 0 && arr[i - 1] !== p - 1 && (
+                        <span className="text-small text-inkFaint">…</span>
+                      )}
+                      <button
+                        onClick={() => goToPage(p)}
+                        className={`text-small font-medium w-8 h-8 rounded-lg transition-colors duration-250 ${
+                          p === clampedPage
+                            ? "text-accent bg-accentMuted"
+                            : "text-inkMuted bg-surfaceRaised hover:text-ink"
+                        }`}
+                      >
+                        {p}
+                      </button>
+                    </span>
+                  ))}
+                <button
+                  onClick={() => goToPage(clampedPage + 1)}
+                  disabled={clampedPage === pageCount}
+                  className="text-small font-medium px-3 py-1.5 rounded-lg text-inkMuted bg-surfaceRaised hover:text-ink disabled:opacity-30 disabled:cursor-not-allowed transition-colors duration-250 flex items-center gap-1"
+                >
+                  Next
+                  <IconArrowRight width={14} height={14} />
+                </button>
+              </div>
+            </div>
+          )}
+        </>
       )}
     </div>
   );
