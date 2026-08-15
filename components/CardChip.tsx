@@ -64,7 +64,7 @@ export default function CardChip({
           <div className="text-body font-medium text-ink">{fmtFee(card.annualFee)}</div>
           {card.featuredBonus && (
             <div className="text-small text-positive mt-0.5">
-              +${card.featuredBonus} bonus
+              +{card.featuredBonus} bonus
             </div>
           )}
         </div>
