@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 const RESOURCES: Record<string, { title: string; blurb: string }> = {
   help: {
     title: "Help centre",
-    blurb: "Answers to common questions about using CredMind.",
+    blurb: "Answers to common questions about using CreditMind.",
   },
   learn: {
     title: "Learn",

@@ -55,7 +55,7 @@ export default function Nav() {
       <div className="max-w-6xl mx-auto px-6 h-16 flex items-center gap-1">
         <Link href="/home" className="flex items-center mr-8 flex-shrink-0">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo-lockup.png" alt="CredMind" className="h-8 w-auto" />
+          <img src="/logo-lockup.png" alt="CreditMind" className="h-8 w-auto" />
         </Link>
 
         <div className="hidden md:flex items-center gap-1">

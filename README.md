@@ -1,4 +1,4 @@
-# CredMind — Setup & Deploy
+# CreditMind — Setup & Deploy
 
 Design system: dark, minimal, Wealthsimple-inspired. Navy/black canvas,
 electric blue accent used only for primary actions. Inter typeface. Custom
