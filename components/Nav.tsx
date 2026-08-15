@@ -12,6 +12,8 @@ import {
   IconStack,
   IconTrend,
   IconChat,
+  IconMenu,
+  IconClose,
 } from "./icons";
 import AccountPanel from "./AccountPanel";
 
@@ -29,6 +31,7 @@ export default function Nav() {
   const [user, setUser] = useState<null | { email?: string }>(null);
   const [loading, setLoading] = useState(true);
   const [panelOpen, setPanelOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
   const supabase = createClient();
 
@@ -42,6 +45,10 @@ export default function Nav() {
     });
     return () => sub.subscription.unsubscribe();
   }, []);
+
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [pathname]);
 
   return (
     <nav className="sticky top-0 z-50 bg-canvas/90 backdrop-blur-md border-b border-border">
@@ -76,24 +83,87 @@ export default function Nav() {
           {!loading && user ? (
             <button
               onClick={() => setPanelOpen(true)}
-              className="w-9 h-9 rounded-full bg-accentMuted flex items-center justify-center text-accent font-semibold text-small"
+              className="hidden md:flex w-9 h-9 rounded-full bg-accentMuted items-center justify-center text-accent font-semibold text-small"
             >
               {user.email?.[0]?.toUpperCase() ?? "?"}
             </button>
           ) : (
             !loading && (
-              <>
+              <div className="hidden md:flex items-center gap-3">
                 <Link href="/login" className="btn-ghost text-small">
                   Log in
                 </Link>
                 <Link href="/signup" className="btn-primary text-small !py-2 !px-4">
                   Get started
                 </Link>
-              </>
+              </div>
             )
           )}
+
+          <button
+            onClick={() => setMenuOpen((v) => !v)}
+            aria-label={menuOpen ? "Close menu" : "Open menu"}
+            className="md:hidden w-9 h-9 rounded-xl flex items-center justify-center text-inkMuted hover:text-ink hover:bg-surface transition-colors duration-250"
+          >
+            {menuOpen ? (
+              <IconClose width={20} height={20} />
+            ) : (
+              <IconMenu width={20} height={20} />
+            )}
+          </button>
         </div>
       </div>
+
+      {/* Mobile nav panel — every page in one tappable list */}
+      {menuOpen && (
+        <div className="md:hidden border-t border-border bg-canvas">
+          <div className="px-4 py-3 flex flex-col gap-1">
+            {NAV_ITEMS.map((item) => {
+              const Icon = item.icon;
+              const active = pathname === item.href;
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`flex items-center gap-3 px-3 py-3 rounded-xl text-body font-medium transition-colors duration-250 ${
+                    active
+                      ? "text-ink bg-surface"
+                      : "text-inkMuted hover:text-ink hover:bg-surface"
+                  }`}
+                >
+                  <Icon width={18} height={18} />
+                  {item.label}
+                </Link>
+              );
+            })}
+          </div>
+
+          <div className="px-4 pb-4 pt-1 border-t border-border">
+            {!loading && user ? (
+              <button
+                onClick={() => setPanelOpen(true)}
+                className="flex items-center gap-3 px-3 py-3 w-full text-left rounded-xl text-body font-medium text-inkMuted hover:text-ink hover:bg-surface transition-colors duration-250"
+              >
+                <span className="w-7 h-7 rounded-full bg-accentMuted flex items-center justify-center text-accent font-semibold text-small">
+                  {user.email?.[0]?.toUpperCase() ?? "?"}
+                </span>
+                Account
+              </button>
+            ) : (
+              !loading && (
+                <div className="flex gap-3 pt-2">
+                  <Link href="/login" className="btn-secondary flex-1 text-center text-small !py-2.5">
+                    Log in
+                  </Link>
+                  <Link href="/signup" className="btn-primary flex-1 text-center text-small !py-2.5">
+                    Get started
+                  </Link>
+                </div>
+              )
+            )}
+          </div>
+        </div>
+      )}
 
       {panelOpen && user && (
         <AccountPanel email={user.email} onClose={() => setPanelOpen(false)} />

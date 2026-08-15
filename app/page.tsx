@@ -9,6 +9,7 @@ import CardChip from "@/components/CardChip";
 import AccountTile from "@/components/AccountTile";
 import FeaturedCardCarousel from "@/components/FeaturedCardCarousel";
 import CategoryGrid from "@/components/CategoryGrid";
+import CardSearchBar from "@/components/CardSearchBar";
 
 const POPULAR_COUNT = 5;
 
@@ -30,7 +31,7 @@ export default function ExplorePage() {
   return (
     <div className="max-w-6xl mx-auto px-6 py-16">
       {/* Hero */}
-      <div className="max-w-2xl mb-14">
+      <div className="max-w-2xl mb-10">
         <h1 className="text-display text-ink mb-4">
           Every Canadian credit card.
           <br />
@@ -41,6 +42,8 @@ export default function ExplorePage() {
           no login required.
         </p>
       </div>
+
+      {!loading && <CardSearchBar cards={cards} />}
 
       {/* Featured cards */}
       {!loading && featured.length > 0 && (
