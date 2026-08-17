@@ -102,7 +102,7 @@ export const TERMS_OF_SERVICE: LegalDoc = {
     {
       heading: "13. Contact us",
       body: [
-        "Questions about these Terms? Reach us at legal@creditmind.ca.",
+        "Questions about these Terms? Reach us at info@creditmind.ca.",
       ],
     },
   ],
@@ -166,7 +166,7 @@ export const PRIVACY_POLICY: LegalDoc = {
     {
       heading: "7. Your rights and choices",
       body: [
-        "Under Canadian privacy law, you generally have the right to access the personal information we hold about you, correct inaccuracies, withdraw consent for certain uses, and request deletion of your account and data. To exercise any of these rights, contact us at privacy@creditmind.ca.",
+        "Under Canadian privacy law, you generally have the right to access the personal information we hold about you, correct inaccuracies, withdraw consent for certain uses, and request deletion of your account and data. To exercise any of these rights, contact us at info@creditmind.ca.",
         "You can also manage cookie preferences through your browser and opt out of non-essential email communications at any time via the unsubscribe link in those emails.",
       ],
     },
@@ -191,7 +191,7 @@ export const PRIVACY_POLICY: LegalDoc = {
     {
       heading: "11. Contact us",
       body: [
-        "Questions, requests, or concerns about this Privacy Policy or your personal information? Reach our privacy team at privacy@creditmind.ca.",
+        "Questions, requests, or concerns about this Privacy Policy or your personal information? Reach us at info@creditmind.ca.",
       ],
     },
   ],
