@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import LegalDocument from "@/components/LegalDocument";
+import { TERMS_OF_SERVICE, PRIVACY_POLICY } from "@/data/legal";
 
 const RESOURCES: Record<string, { title: string; blurb: string }> = {
   help: {
@@ -10,14 +12,6 @@ const RESOURCES: Record<string, { title: string; blurb: string }> = {
     title: "Learn",
     blurb: "Guides on credit scores, rewards, and debt payoff strategies.",
   },
-  terms: {
-    title: "Terms of service",
-    blurb: "The terms that govern your use of this app.",
-  },
-  privacy: {
-    title: "Privacy policy",
-    blurb: "How we collect, use, and protect your data.",
-  },
   licenses: {
     title: "Licenses",
     blurb: "Open-source software and attributions used in this app.",
@@ -25,6 +19,9 @@ const RESOURCES: Record<string, { title: string; blurb: string }> = {
 };
 
 export default function ResourcePage({ params }: { params: { slug: string } }) {
+  if (params.slug === "terms") return <LegalDocument doc={TERMS_OF_SERVICE} />;
+  if (params.slug === "privacy") return <LegalDocument doc={PRIVACY_POLICY} />;
+
   const resource = RESOURCES[params.slug];
   if (!resource) notFound();
 
