@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import GatedPreview from "@/components/GatedPreview";
+import ComingSoon from "@/components/ComingSoon";
 
 type Debt = { id: number; name: string; balance: number; rate: number; minPayment: number };
 type Strategy = "avalanche" | "snowball";
@@ -295,11 +295,11 @@ function DebtContent() {
 
 export default function DebtPage() {
   return (
-    <GatedPreview
-      title="Build your payoff plan"
-      blurb="Create a free account to run the Debt Optimizer and get an AI-powered plan to become debt-free faster."
+    <ComingSoon
+      title="Debt Optimizer is almost ready"
+      blurb="We're putting the finishing touches on this — check back soon for an AI-powered plan to become debt-free faster."
     >
       <DebtContent />
-    </GatedPreview>
+    </ComingSoon>
   );
 }

@@ -5,7 +5,7 @@ import { CreditCard } from "@/data/cards";
 import { getCards } from "@/lib/cards";
 import { createClient } from "@/lib/supabase/client";
 import CardImage from "@/components/CardImage";
-import GatedPreview from "@/components/GatedPreview";
+import ComingSoon from "@/components/ComingSoon";
 import { IconPlane, IconCoin, IconStack, IconTarget } from "@/components/icons";
 
 type Result = {
@@ -226,11 +226,11 @@ function OptimizerContent() {
 
 export default function OptimizerPage() {
   return (
-    <GatedPreview
-      title="See your stack's score"
-      blurb="Create a free account to run the Stack Optimizer and get an AI-scored breakdown of your cards."
+    <ComingSoon
+      title="Stack Optimizer is almost ready"
+      blurb="We're putting the finishing touches on this — check back soon for an AI-scored breakdown of your card stack."
     >
       <OptimizerContent />
-    </GatedPreview>
+    </ComingSoon>
   );
 }

@@ -103,7 +103,7 @@ export default function CardDetailPage({ params }: { params: { id: string } }) {
       <div className="flex items-center gap-2 mb-4">
         {card.featured && (
           <span className="label-micro text-accent bg-accentMuted px-3 py-1.5 rounded-lg inline-block">
-            Featured — ${card.featuredBonus} bonus via our link
+            Featured — {card.featuredBonus} welcome bonus
           </span>
         )}
         {card.instantApproval && (
@@ -214,10 +214,12 @@ export default function CardDetailPage({ params }: { params: { id: string } }) {
       </div>
 
       <div className="flex gap-3 mb-4">
-        <button className="btn-primary flex-1">
-          {card.featuredBonus
-            ? `Apply now & get $${card.featuredBonus} →`
-            : "Apply now →"}
+        <button
+          disabled
+          title="We're finalizing partnerships with card issuers — applying directly will be available soon."
+          className="btn-primary flex-1 opacity-50 cursor-not-allowed"
+        >
+          Coming soon
         </button>
         <button
           onClick={() => router.push(`/compare?ids=${card.id}`)}

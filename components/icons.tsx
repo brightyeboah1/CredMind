@@ -173,3 +173,12 @@ export function IconSearch(props: SVGProps<SVGSVGElement>) {
     </svg>
   );
 }
+
+export function IconClock(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base} {...props}>
+      <circle cx="12" cy="12" r="8.5" />
+      <path d="M12 7.5V12l3.5 2" />
+    </svg>
+  );
+}

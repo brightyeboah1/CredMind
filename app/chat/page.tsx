@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { IconChat, IconArrowRight } from "@/components/icons";
-import GatedPreview from "@/components/GatedPreview";
+import ComingSoon from "@/components/ComingSoon";
 
 type Msg = { role: "user" | "assistant"; text: string };
 
@@ -150,11 +150,11 @@ function ChatContent() {
 
 export default function ChatPage() {
   return (
-    <GatedPreview
-      title="Meet your AI Educator"
-      blurb="Create a free account to ask unlimited (well, 5 free/mo) questions about Canadian credit, debt, and your score."
+    <ComingSoon
+      title="AI Educator is almost ready"
+      blurb="We're putting the finishing touches on this — check back soon to ask questions about Canadian credit, debt, and your score."
     >
       <ChatContent />
-    </GatedPreview>
+    </ComingSoon>
   );
 }
